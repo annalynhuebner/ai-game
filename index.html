@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A-Frame VR Scavenger Hunt</title>
+  <!-- Load A-Frame Framework -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <script>
+    // Game Variables
+    let score = 0;
+    const totalItems = 6;
+
+    // Custom A-Frame component to handle picking up objects
+    AFRAME.registerComponent('collectible', {
+      init: function () {
+        let el = this.el; // Reference to the object clicked
+
+        el.addEventListener('click', function () {
+          // Stop if object is already hidden
+          if (!el.getAttribute('visible')) return;
+
+          // Pick up item: hide it from the 3D scene
+          el.setAttribute('visible', 'false');
+
+          // Increase score counter
+          score++;
+
+          // Update screen text display
+          let scoreText = document.querySelector('#score-text');
+          if (scoreText) {
+            if (score === totalItems) {
+              scoreText.setAttribute('value', 'QUEST COMPLETE! YOU FOUND THEM ALL!');
+              scoreText.setAttribute('color', '#FFD700');
+            } else {
+              scoreText.setAttribute('value', 'Items Found: ' + score + ' / ' + totalItems);
+            }
+          }
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+  <a-scene>
+    <!-- Custom Lighting -->
+    <a-light type="ambient" color="#555"></a-light>
+    <a-light type="point" position="2 5 2" intensity="1.5" color="#FFF"></a-light>
+
+    <!-- Sky Background (Night Sky) -->
+    <a-sky color="#0B0B1A"></a-sky>
+
+    <!-- Ground Plane (Sand) -->
+    <a-plane position="0 0 0" rotation="-90 0 0" width="40" height="40" color="#EEDC82"></a-plane>
+
+    <!-- Player Camera & Reticle Cursor (Floor/Standing eye-level height) -->
+    <a-entity position="0 1.6 0">
+      <a-camera>
+        <!-- Red reticle cursor centered on screen (far reach added) -->
+        <a-cursor color="#FF0000" fuse="false" raycaster="objects: .clickable; far: 20"></a-cursor>
+
+        <!-- Heads-Up Display (HUD) Score Text -->
+        <a-text id="score-text" value="Items Found: 0 / 6" position="-0.4 0.8 -1.2" scale="0.5 0.5 0.5" color="#00FFFF"></a-text>
+      </a-camera>
+    </a-entity>
+
+    <!-- 6 Collectible Objects -->
+    <!-- Object 1: Large Red Box -->
+    <a-box class="clickable" collectible position="-5 1 -7" rotation="0 45 0" color="#FF0000" width="2" height="2" depth="2"></a-box>
+
+    <!-- Object 2: Bobbing Yellow Sphere -->
+    <a-sphere class="clickable" collectible position="3 1.2 -5" radius="0.5" color="#FFC65D" animation="property: position; to: 3 2.5 -5; dir: alternate; loop: true; dur: 1500"></a-sphere>
+
+    <!-- Object 3: Tall Pink Cylinder -->
+    <a-cylinder class="clickable" collectible position="-4 3 -7" radius="0.8" height="6" color="#FF6384"></a-cylinder>
+
+    <!-- Object 4: Orange Cone -->
+    <a-cone class="clickable" collectible position="1.5 0.5 -3" radius-bottom="0.5" height="1" color="#FF9F40"></a-cone>
+
+    <!-- Object 5: Spinning Cyan Ring (Torus) -->
+    <a-torus class="clickable" collectible position="0 2 -6" radius="0.6" radius-tubular="0.15" color="#4BC0C0" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-torus>
+
+    <!-- Object 6: Purple Dodecahedron -->
+    <a-dodecahedron class="clickable" collectible position="-1 1 -5" radius="0.5" color="#9932CC"></a-dodecahedron>
+
+    <!-- Decorative Trees -->
+    <!-- Tree 1 -->
+    <a-box position="-5 1 -6" depth="1" height="2" width="1" color="#8B4513"></a-box>
+    <a-sphere position="-5 2.5 -6" radius="1.5" color="#228B22"></a-sphere>
+
+    <!-- Tree 2 -->
+    <a-box position="5 1 -8" depth="1" height="2" width="1" color="#8B4513"></a-box>
+    <a-sphere position="5 2.5 -8" radius="1.5" color="#228B22"></a-sphere>
+  </a-scene>
+</body>
+</html>
